@@ -1,5 +1,6 @@
 package `in`.elabs.certificate_auth_backend.features.auth.data.model
 
+import `in`.elabs.certificate_auth_backend.features.admin.data.model.OrganisationModel
 import jakarta.persistence.*
 
 @Entity
