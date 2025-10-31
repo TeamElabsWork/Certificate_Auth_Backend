@@ -1,4 +1,4 @@
-package `in`.elabs.certificate_auth_backend.endpoints.auth.model
+package `in`.elabs.certificate_auth_backend.features.auth.data.model
 
 import jakarta.persistence.*
 
