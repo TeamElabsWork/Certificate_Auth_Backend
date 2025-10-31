@@ -1,6 +1,9 @@
-package `in`.elabs.certificate_auth_backend.endpoints.certificate
+package `in`.elabs.certificate_auth_backend.features.certificate.presentation
 
-import `in`.elabs.certificate_auth_backend.endpoints.certificate.model.CertificateModel
+import `in`.elabs.certificate_auth_backend.features.certificate.data.model.CertificateModel
+import `in`.elabs.certificate_auth_backend.features.certificate.domain.CertificateService
+import `in`.elabs.certificate_auth_backend.features.certificate.presentation.dto.CertificateRequest
+import `in`.elabs.certificate_auth_backend.features.certificate.presentation.dto.CertificateResponse
 import `in`.elabs.certificate_auth_backend.util.HashIdUtil
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -17,19 +20,14 @@ class CertificateController(
     private val hashIdUtil: HashIdUtil
 ) {
     @PostMapping("/create")
-    fun createCertificate(@RequestBody request: CertificateModel): ResponseEntity<String> {
+    fun createCertificate(@RequestBody request: CertificateRequest): ResponseEntity<String> {
         val savedCertificate = certificateService.createCertificate(request)
-
-        if (!savedCertificate){
-            return ResponseEntity.badRequest().body("Error: certificate cannot be created")
-        }
-        val token = hashIdUtil.encode(request.id)
-
+        val token = hashIdUtil.encode(savedCertificate.id)
         return ResponseEntity.ok(token)
     }
 
     @GetMapping("/verify/{token}")
-    fun verifyCertificate(@PathVariable token: String): ResponseEntity<CertificateModel> {
+    fun verifyCertificate(@PathVariable token: String): ResponseEntity<CertificateResponse> {
         val decoded = hashIdUtil.decode(token)
 
         if (decoded.isEmpty()) {
@@ -38,7 +36,7 @@ class CertificateController(
 
         val realId = decoded[0]
 
-        val certificate = certificateService.getCertificateById(realId) ?: return ResponseEntity.notFound().build()
+        val certificate = certificateService.getCertificateResponseById(realId) ?: return ResponseEntity.notFound().build()
 
         return ResponseEntity.ok(certificate)
     }
