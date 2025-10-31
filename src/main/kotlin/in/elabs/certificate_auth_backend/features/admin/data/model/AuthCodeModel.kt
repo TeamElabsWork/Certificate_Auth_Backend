@@ -11,8 +11,17 @@ data class AuthCodeModel(
     val id : Long = 0,
     @Column(unique = true, nullable = false)
     val code: String,
+    @Column(nullable = false)
     val expiresIn: Instant,
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    val status: AuthCodeStatus = AuthCodeStatus.UNUSED,
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organisation_id", referencedColumnName = "id")
+    @JoinColumn(name = "organisation_id", referencedColumnName = "id", nullable = false)
     val organisation: OrganisationModel
 )
+
+enum class AuthCodeStatus{
+    USED,
+    UNUSED
+}
