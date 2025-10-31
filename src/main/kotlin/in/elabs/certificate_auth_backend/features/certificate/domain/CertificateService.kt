@@ -5,6 +5,7 @@ import `in`.elabs.certificate_auth_backend.features.certificate.data.model.Certi
 import `in`.elabs.certificate_auth_backend.features.certificate.data.repo.CertificateRepo
 import `in`.elabs.certificate_auth_backend.features.certificate.presentation.dto.CertificateRequest
 import `in`.elabs.certificate_auth_backend.features.certificate.presentation.dto.CertificateResponse
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 
 @Service
@@ -27,7 +28,7 @@ class CertificateService(
         )
     }
 
-
+    @Transactional
     fun createCertificate(request: CertificateRequest): CertificateModel {
         val issuer = request.issuerId?.let { userRepo.findById(it).orElse(null) }
 
