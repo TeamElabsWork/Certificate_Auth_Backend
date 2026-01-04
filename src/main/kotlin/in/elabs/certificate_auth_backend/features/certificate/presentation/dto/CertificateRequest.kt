@@ -5,6 +5,4 @@ data class CertificateRequest(
     val teamName: String?,
     val rollNumber: Long,
     val eventName: String,
-    val issuerId: Long,
-    val issuedAt: String
 )

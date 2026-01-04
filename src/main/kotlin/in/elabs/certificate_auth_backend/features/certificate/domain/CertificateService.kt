@@ -8,6 +8,7 @@ import `in`.elabs.certificate_auth_backend.features.certificate.presentation.dto
 import `in`.elabs.certificate_auth_backend.util.HashIdUtil
 import jakarta.transaction.Transactional
 import org.springframework.http.HttpStatus
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
 
@@ -43,11 +44,18 @@ class CertificateService(
 
     @Transactional
     fun createCertificate(request: CertificateRequest): String {
-        val issuer = request.issuerId.let {
-            userRepo.findById(it).orElseThrow {
-                ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
-            }
+        val issuerId = SecurityContextHolder.getContext()
+            .authentication
+            ?.principal as? Long
+            ?: throw ResponseStatusException(
+                HttpStatus.UNAUTHORIZED,
+                "Unauthenticated"
+            )
+
+        val issuer = userRepo.findById(issuerId).orElseThrow {
+            ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
         }
+
         val certificate = certificateRepo.save(
             CertificateModel(
                 name = request.name,
@@ -55,9 +63,9 @@ class CertificateService(
                 rollNumber = request.rollNumber,
                 eventName = request.eventName,
                 issuer = issuer,
-                issuedAt = request.issuedAt
             )
         )
+
         return hashIdUtil.encode(certificate.id)
     }
 

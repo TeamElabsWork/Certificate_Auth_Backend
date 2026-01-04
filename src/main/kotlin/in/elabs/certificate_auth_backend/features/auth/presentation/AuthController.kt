@@ -1,8 +1,7 @@
 package `in`.elabs.certificate_auth_backend.features.auth.presentation
 
 import `in`.elabs.certificate_auth_backend.features.auth.domain.AuthService
-import `in`.elabs.certificate_auth_backend.features.certificate.data.model.CertificateModel
-import `in`.elabs.certificate_auth_backend.features.certificate.presentation.dto.CertificateRequest
+import `in`.elabs.certificate_auth_backend.features.auth.presentation.dto.*
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -15,8 +14,24 @@ class AuthController(
     private val authService: AuthService
 ) {
 
-    @PostMapping
-    fun auth(@RequestBody certificateRequest: CertificateRequest): ResponseEntity<CertificateModel>? {
-        return null
+    @PostMapping("/signup")
+    fun createUser(
+        @RequestBody request: SignUpRequest
+    ): ResponseEntity<SignUpResponse> {
+        return ResponseEntity.ok(authService.createUser(request))
+    }
+
+    @PostMapping("/login")
+    fun loginUser(
+        @RequestBody request: LoginRequest
+    ): ResponseEntity<TokenPair> {
+        return ResponseEntity.ok(authService.loginUser(request))
+    }
+
+    @PostMapping("/refresh")
+    fun refreshToken(
+        @RequestBody request: RefreshRequest
+    ): ResponseEntity<TokenPair>{
+        return ResponseEntity.ok(authService.refresh(request.refreshToken))
     }
 }

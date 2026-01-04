@@ -1,7 +1,7 @@
 package `in`.elabs.certificate_auth_backend.util
 
 import org.springframework.stereotype.Component
-import java.util.UUID
+import java.util.*
 
 @Component
 class RandomCodeGenerator {

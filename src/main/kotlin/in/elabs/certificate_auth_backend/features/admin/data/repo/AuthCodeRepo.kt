@@ -9,4 +9,6 @@ interface AuthCodeRepo: JpaRepository<AuthCodeModel, Long>{
     fun existsByCode(code: String): Boolean
 
     fun deleteByExpiresInBefore(time: Instant): Long
+
+    fun findByCode(code: String): AuthCodeModel?
 }
