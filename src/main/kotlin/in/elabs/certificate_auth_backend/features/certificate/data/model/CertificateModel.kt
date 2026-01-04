@@ -2,6 +2,7 @@ package `in`.elabs.certificate_auth_backend.features.certificate.data.model
 
 import `in`.elabs.certificate_auth_backend.features.auth.data.model.UserModel
 import jakarta.persistence.*
+import java.time.Instant
 
 @Entity
 data class CertificateModel(
@@ -19,5 +20,5 @@ data class CertificateModel(
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     val issuer: UserModel,
     @Column(nullable = false)
-    val issuedAt: String,
+    val issuedAt: Instant = Instant.now(),
 )

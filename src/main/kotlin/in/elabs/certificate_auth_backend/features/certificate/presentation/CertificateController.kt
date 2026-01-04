@@ -14,7 +14,9 @@ class CertificateController(
 ) {
     @PostMapping("/create")
     fun createCertificate(@RequestBody request: CertificateRequest): ResponseEntity<String> {
-        return ResponseEntity.ok(certificateService.createCertificate(request))
+        return ResponseEntity.ok(
+            certificateService.createCertificate(request)
+        )
     }
 
     @GetMapping("/verify/{token}")

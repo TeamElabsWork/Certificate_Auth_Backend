@@ -1,12 +1,7 @@
 package `in`.elabs.certificate_auth_backend.features.auth.presentation
 
-import `in`.elabs.certificate_auth_backend.features.auth.data.model.UserModel
 import `in`.elabs.certificate_auth_backend.features.auth.domain.AuthService
-import `in`.elabs.certificate_auth_backend.features.auth.presentation.dto.LoginRequest
-import `in`.elabs.certificate_auth_backend.features.auth.presentation.dto.SignUpRequest
-import `in`.elabs.certificate_auth_backend.features.auth.presentation.dto.SignUpResponse
-import `in`.elabs.certificate_auth_backend.features.certificate.data.model.CertificateModel
-import `in`.elabs.certificate_auth_backend.features.certificate.presentation.dto.CertificateRequest
+import `in`.elabs.certificate_auth_backend.features.auth.presentation.dto.*
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -29,7 +24,14 @@ class AuthController(
     @PostMapping("/login")
     fun loginUser(
         @RequestBody request: LoginRequest
-    ): ResponseEntity<UserModel> {
+    ): ResponseEntity<TokenPair> {
         return ResponseEntity.ok(authService.loginUser(request))
+    }
+
+    @PostMapping("/refresh")
+    fun refreshToken(
+        @RequestBody request: RefreshRequest
+    ): ResponseEntity<TokenPair>{
+        return ResponseEntity.ok(authService.refresh(request.refreshToken))
     }
 }
