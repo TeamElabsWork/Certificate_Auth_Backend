@@ -22,6 +22,7 @@ class SecurityConfig(
             }
             .authorizeHttpRequests {
                 it.requestMatchers(
+                    "/api/v1/admin/**",
                     "/api/v1/auth/**",
                     "/api/v1/certificate/verify/**"
                 ).permitAll()

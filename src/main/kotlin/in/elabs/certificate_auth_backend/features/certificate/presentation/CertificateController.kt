@@ -25,12 +25,21 @@ class CertificateController(
         return ResponseEntity.ok(certificate)
     }
 
-    @GetMapping
+    @GetMapping("/all")
     fun getAllCertificates(): ResponseEntity<List<CertificateModel>> {
         return if (certificateService.getAllCertificates().isEmpty()) {
             ResponseEntity.noContent().build()
         }else{
             ResponseEntity.ok(certificateService.getAllCertificates())
+        }
+    }
+
+    @GetMapping
+    fun getCertificateIssuedByUser(): ResponseEntity<List<CertificateModel>> {
+        return if (certificateService.getAllCertificateIssuedByIssuer().isEmpty()) {
+            ResponseEntity.noContent().build()
+        } else {
+            ResponseEntity.ok(certificateService.getAllCertificateIssuedByIssuer())
         }
     }
 }
