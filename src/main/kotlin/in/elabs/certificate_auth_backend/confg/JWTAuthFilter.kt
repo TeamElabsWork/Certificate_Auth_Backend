@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
-class JWTAuthFilter(
+class   JWTAuthFilter(
     private val jwtService: JWTService
 ): OncePerRequestFilter() {
     override fun doFilterInternal(

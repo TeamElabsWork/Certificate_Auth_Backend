@@ -72,4 +72,18 @@ class CertificateService(
     fun getAllCertificates(): List<CertificateModel> {
         return certificateRepo.findAll()
     }
+
+    fun getAllCertificateIssuedByIssuer(): List<CertificateModel>{
+        val issuerId = SecurityContextHolder.getContext()
+            .authentication
+            ?.principal as? Long
+            ?: throw ResponseStatusException(
+                HttpStatus.UNAUTHORIZED,
+                "Unauthenticated"
+            )
+        val issuer = userRepo.findById(issuerId).orElseThrow {
+            ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
+        }
+        return certificateRepo.findAllByIssuer_Id(issuerId = issuer.id)
+    }
 }
