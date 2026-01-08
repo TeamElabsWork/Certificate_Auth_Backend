@@ -9,7 +9,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 class SecurityConfig(
-    private val jwtAuthFilter: JWTAuthFilter
+    private val jwtAuthFilter: JWTAuthFilter,
+    private val authenticationEntryPoint: JwtAuthenticationEntryPoint,
+    private val accessDeniedHandler: JwtAccessDeniedHandler
 ) {
 
     @Bean
@@ -17,15 +19,23 @@ class SecurityConfig(
 
         http
             .csrf { it.disable() }
+            .formLogin { it.disable() }
+            .httpBasic { it.disable() }
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
+            .exceptionHandling {
+                it.authenticationEntryPoint(authenticationEntryPoint)
+                it.accessDeniedHandler(accessDeniedHandler)
+            }
             .authorizeHttpRequests {
                 it.requestMatchers(
-                    "/api/v1/admin/**",
+//                    "/api/v1/admin/**",
                     "/api/v1/auth/**",
                     "/api/v1/certificate/verify/**"
                 ).permitAll()
+                it.requestMatchers("/api/v1/admin/**")
+                    .hasRole("ADMIN")
                 it.anyRequest().authenticated()
             }
             .addFilterBefore(

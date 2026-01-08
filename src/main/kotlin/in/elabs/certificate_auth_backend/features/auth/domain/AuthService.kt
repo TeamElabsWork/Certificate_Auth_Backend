@@ -3,6 +3,7 @@ package `in`.elabs.certificate_auth_backend.features.auth.domain
 import `in`.elabs.certificate_auth_backend.features.admin.data.repo.AuthCodeRepo
 import `in`.elabs.certificate_auth_backend.features.admin.data.repo.OrganisationRepo
 import `in`.elabs.certificate_auth_backend.features.auth.data.model.RefreshTokenModel
+import `in`.elabs.certificate_auth_backend.features.auth.data.model.Role
 import `in`.elabs.certificate_auth_backend.features.auth.data.model.UserModel
 import `in`.elabs.certificate_auth_backend.features.auth.data.repo.RefreshTokenRepo
 import `in`.elabs.certificate_auth_backend.features.auth.data.repo.UserRepo
@@ -68,7 +69,7 @@ class AuthService(
     }
 
     @Transactional
-    fun createUser(request: SignUpRequest): SignUpResponse {
+    fun createUser(request: SignUpRequest, isAdmin: Boolean): SignUpResponse {
         val hashedPassword = hashPassEncoder.encodePassword(request.userPassword)?:
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid password")
         val existingUser = userRepo.findByEmail(request.userEmail)
@@ -86,7 +87,8 @@ class AuthService(
                 name = request.name,
                 email = request.userEmail,
                 hashedPassword = hashedPassword,
-                organisation = organisation
+                organisation = organisation,
+                roles = if (isAdmin) mutableSetOf(Role.ROLE_ORG, Role.ROLE_ADMIN) else mutableSetOf(Role.ROLE_ORG)
             )
         )
         return SignUpResponse(
@@ -106,8 +108,8 @@ class AuthService(
         if (!isPasswordValid) {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials")
         }
-        val newAccessToken = jwtService.generateAccessToken(user.id)
-        val newRefreshToken = jwtService.generateRefreshToken(user.id)
+        val newAccessToken = jwtService.generateAccessToken(user)
+        val newRefreshToken = jwtService.generateRefreshToken(user)
         storeRefreshToken(user,newRefreshToken)
         return TokenPair(
             accessToken = newAccessToken,
@@ -129,8 +131,8 @@ class AuthService(
         refreshTokenRepo.findByUser_IdAndHashedToken(user.id,hashed)
             ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED,"Refresh Token Not recognised")
         refreshTokenRepo.deleteByUser_IdAndHashedToken(user.id,hashed)
-        val newAccessToken = jwtService.generateAccessToken(user.id)
-        val newRefreshToken = jwtService.generateRefreshToken(user.id)
+        val newAccessToken = jwtService.generateAccessToken(user)
+        val newRefreshToken = jwtService.generateRefreshToken(user)
         storeRefreshToken(user,newRefreshToken)
         return TokenPair(
             accessToken = newAccessToken,

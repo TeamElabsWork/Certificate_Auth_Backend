@@ -17,5 +17,17 @@ data class UserModel(
     val hashedPassword: String,
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organisation_id", referencedColumnName = "id", nullable = false)
-    val organisation: OrganisationModel
+    val organisation: OrganisationModel,
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+        name = "user_roles",
+        joinColumns = [JoinColumn(name = "user_id")]
+    )
+    @Enumerated(EnumType.STRING)
+    val roles: MutableSet<Role> = mutableSetOf(Role.ROLE_ORG)
 )
+
+enum class Role {
+    ROLE_ADMIN,
+    ROLE_ORG
+}
